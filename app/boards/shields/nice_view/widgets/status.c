@@ -86,6 +86,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
 
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc, output_text);
 
+#if !IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE)
     // Draw WPM
     lv_canvas_draw_rect(canvas, 0, 21, 68, 42, &rect_white_dsc);
     lv_canvas_draw_rect(canvas, 1, 22, 66, 40, &rect_black_dsc);
@@ -117,6 +118,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
         points[i].y = 60 - (state->wpm[i] - min) * 36 / range;
     }
     lv_canvas_draw_line(canvas, points, 10, &line_dsc);
+#endif
 
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
@@ -316,10 +318,18 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(top, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
     lv_obj_t *middle = lv_canvas_create(widget->obj);
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE)
+    lv_obj_align(middle, LV_ALIGN_TOP_LEFT, 6, 0);
+#else
     lv_obj_align(middle, LV_ALIGN_TOP_LEFT, 24, 0);
+#endif
     lv_canvas_set_buffer(middle, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
     lv_obj_t *bottom = lv_canvas_create(widget->obj);
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE)
+    lv_obj_align(bottom, LV_ALIGN_TOP_RIGHT, 0, 30);
+#else
     lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, -44, 0);
+#endif
     lv_canvas_set_buffer(bottom, widget->cbuf3, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
     sys_slist_append(&widgets, &widget->node);

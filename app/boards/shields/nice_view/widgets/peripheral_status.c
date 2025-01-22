@@ -25,6 +25,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 LV_IMG_DECLARE(balloon);
 LV_IMG_DECLARE(mountain);
+LV_IMG_DECLARE(moon);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
@@ -111,13 +112,23 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 160, 68);
     lv_obj_t *top = lv_canvas_create(widget->obj);
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE)
     lv_obj_align(top, LV_ALIGN_TOP_RIGHT, 0, 0);
+#else
+    lv_obj_align(top, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+#endif
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
     lv_obj_t *art = lv_img_create(widget->obj);
     bool random = sys_rand32_get() & 1;
+
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE)
+    lv_img_set_src(art, &moon);
+    lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, 0);
+#else
     lv_img_set_src(art, random ? &balloon : &mountain);
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, 0);
+#endif
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();

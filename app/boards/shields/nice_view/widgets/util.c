@@ -20,7 +20,16 @@ void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]) {
     img.header.h = CANVAS_SIZE;
 
     lv_canvas_fill_bg(canvas, LVGL_BACKGROUND, LV_OPA_COVER);
-    lv_canvas_transform(canvas, &img, 900, LV_IMG_ZOOM_NONE, -1, 0, CANVAS_SIZE / 2,
+    int16_t angle = 900;
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE) &&                                  \
+    IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    angle = 0;
+#endif
+#if IS_ENABLED(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM_ROTATE) &&                                  \
+    !IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    angle = 1800;
+#endif
+    lv_canvas_transform(canvas, &img, angle, LV_IMG_ZOOM_NONE, -1, 0, CANVAS_SIZE / 2,
                         CANVAS_SIZE / 2, true);
 }
 
